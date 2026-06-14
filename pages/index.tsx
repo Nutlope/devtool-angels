@@ -19,6 +19,8 @@ import {
   searchOptions,
 } from "../utils/utils";
 
+const REMOVED_INVESTOR_NAMES = new Set(["Ian Storm Taylor"]);
+
 export default function Dashboard({ data }: any) {
   const allAngels = JSON.parse(data);
   const [search, setSearch] = useState("");
@@ -109,7 +111,10 @@ export default function Dashboard({ data }: any) {
 }
 
 export async function getStaticProps() {
-  const data = await prisma.investor.findMany({});
+  const investors = await prisma.investor.findMany({});
+  const data = investors.filter(
+    (investor) => !REMOVED_INVESTOR_NAMES.has(investor.name)
+  );
 
   return {
     props: {
